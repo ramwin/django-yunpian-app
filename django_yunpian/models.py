@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 import json
 import logging
 from yunpian_python_sdk.ypclient import YunpianClient
+from . import exceptions
 
 
 log = logging.getLogger(__name__)
@@ -84,10 +85,16 @@ class Message(models.Model):
             "YC.MOBILE": self.mobile,
             "YC.TEXT": text,
         })
+        if r.code() == 10:
+            log.error(r.detail())
+            log.error(self)
+            raise exceptions.NoHarassException(r.detail())
         if r.code() != 0:
             log.error("短信发送失败")
             log.error(self)
-            raise Exception("短信发送失败")
+            log.error(r)
+            log.error(r.exception())
+            raise exceptions.YunpianException(r.detail())
 
     @classmethod
     def post_save(cls, sender, *args, **kwargs):
