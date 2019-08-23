@@ -46,7 +46,7 @@ class Template(models.Model):
     )
     id = models.IntegerField(unique=True, primary_key=True)
     sign = models.ForeignKey(Sign, on_delete=models.CASCADE)
-    _type = models.CharField("短信类型", choices=TYPE_CHOICE, max_length=5)
+    _type = models.CharField("短信类型", choices=TYPE_CHOICE, max_length=15)
     content = models.TextField(
         "模板内容", help_text="要是python的format形式.里面的变量用{}包裹")
 
@@ -66,7 +66,7 @@ class Message(models.Model):
     template = models.ForeignKey(
         Template, on_delete=models.SET_NULL, null=True)
     status = models.CharField(
-        "状态", choices=STATUS_CHOICE, max_length=7, default="发送中")
+        "状态", choices=STATUS_CHOICE, max_length=31, default="发送中")
     params = models.TextField(
         "短信参数", help_text="用json.dumps后的参数", default="{}")
     time = models.DateTimeField(auto_now_add=True)
