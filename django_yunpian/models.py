@@ -60,6 +60,7 @@ class Message(models.Model):
     STATUS_CHOICE = (
         ("发送成功", "发送成功"),
         ("发送中", "发送中"),
+        ("发送失败", "发送失败"),
     )
     mobile = models.CharField("手机号", max_length=14)
     template = models.ForeignKey(
@@ -85,6 +86,12 @@ class Message(models.Model):
             "YC.MOBILE": self.mobile,
             "YC.TEXT": text,
         })
+        if r.code() == 0:
+            self.status = "发送成功"
+            self.save()
+        else:
+            self.status = "发送失败"
+            self.save()
         if r.code() == 10:
             log.error(r.detail())
             log.error(self)
