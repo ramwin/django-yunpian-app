@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
+from django.db.models.signals import post_save
 import json
 import logging
 from yunpian_python_sdk.ypclient import YunpianClient
@@ -17,7 +18,7 @@ class Account(models.Model):
     apikey = models.CharField("APIKEY", unique=True, max_length=63)
 
     def __str__(self):
-        return "云片网的帐号: {}".format(self.name)
+        return "Account: {}".format(self.id)
 
     @property
     def ypclient(self):
@@ -31,7 +32,7 @@ class Sign(models.Model):
     name = models.CharField("签名内容", max_length=31)
 
     def __str__(self):
-        return "云片网的签名: {}".format(self.name)
+        return "Sign: {}".format(self.id)
 
 
 @python_2_unicode_compatible
@@ -45,11 +46,11 @@ class Template(models.Model):
     id = models.IntegerField(unique=True, primary_key=True)
     sign = models.ForeignKey(Sign, on_delete=models.CASCADE)
     _type = models.CharField("短信类型", choices=TYPE_CHOICE, max_length=5)
-    content = models.TextField("模板内容",
-        help_text="要是python的format形式.里面的变量用{}包裹")
+    content = models.TextField(
+        "模板内容", help_text="要是python的format形式.里面的变量用{}包裹")
 
     def __str__(self):
-        return "短信的模板: {}".format(self.id)
+        return "Template: {}".format(self.id)
 
 
 @python_2_unicode_compatible
@@ -60,7 +61,8 @@ class Message(models.Model):
         ("发送中", "发送中"),
     )
     mobile = models.CharField("手机号", max_length=14)
-    template = models.ForeignKey(Template, on_delete=models.SET_NULL, null=True)
+    template = models.ForeignKey(
+        Template, on_delete=models.SET_NULL, null=True)
     status = models.CharField(
         "状态", choices=STATUS_CHOICE, max_length=7, default="发送中")
     params = models.TextField(
@@ -68,7 +70,7 @@ class Message(models.Model):
     time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "发送的短信: {}".format(self.id)
+        return "Message: {}".format(self.id)
 
     def send(self):
         """发送短信"""
@@ -86,3 +88,13 @@ class Message(models.Model):
             log.error("短信发送失败")
             log.error(self)
             raise Exception("短信发送失败")
+
+    @classmethod
+    def post_save(cls, sender, *args, **kwargs):
+        instance = kwargs["instance"]
+        created = kwargs["created"]
+        if created:
+            instance.send()
+
+
+post_save.connect(Message.post_save, sender=Message)
