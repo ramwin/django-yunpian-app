@@ -83,8 +83,8 @@ class Message(models.Model):
             self.template.content.format(**params)
         )
         r = ypclient.sms().single_send({
-            "YC.MOBILE": self.mobile,
-            "YC.TEXT": text,
+            "mobile": self.mobile,
+            "text": text,
         })
         if r.code() == 0:
             self.status = "发送成功"
