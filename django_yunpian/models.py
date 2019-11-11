@@ -98,8 +98,10 @@ class Message(models.Model):
             raise exceptions.NoHarassException(r.detail())
         if r.code() != 0:
             log.error("短信发送失败")
+            log.error(r.code())
             log.error(self)
             log.error(r)
+            log.error(text)
             log.error(r.exception())
             raise exceptions.YunpianException(r.detail())
 
