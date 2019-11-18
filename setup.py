@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="django-yunpian-app",
-    version="1.0.5",
+    version="1.0.6",
     author="Xiang Wang",
     author_email="ramwin@qq.com",
     description="用于云片网的django app",
