@@ -19,7 +19,7 @@ class Account(models.Model):
     apikey = models.CharField("APIKEY", unique=True, max_length=63)
 
     def __str__(self):
-        return "Account: {}".format(self.id)
+        return "Account: {}".format(self.name)
 
     @property
     def ypclient(self):
@@ -33,7 +33,7 @@ class Sign(models.Model):
     name = models.CharField("签名内容", max_length=31)
 
     def __str__(self):
-        return "Sign: {}".format(self.id)
+        return "Sign: {}".format(self.name)
 
 
 @python_2_unicode_compatible
@@ -51,7 +51,7 @@ class Template(models.Model):
         "模板内容", help_text="要是python的format形式.里面的变量用{}包裹")
 
     def __str__(self):
-        return "Template: {}".format(self.id)
+        return "{}模板: {}".format(self.id, self.content)
 
 
 @python_2_unicode_compatible
