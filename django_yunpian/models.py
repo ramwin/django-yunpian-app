@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-
-from django.utils.encoding import python_2_unicode_compatible
 from django.db import models
 from django.db.models.signals import post_save
 import json
@@ -12,7 +9,6 @@ from . import exceptions
 log = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class Account(models.Model):
     """云片网注册的帐号"""
     name = models.CharField("帐号名称", unique=True, max_length=63)
@@ -26,7 +22,6 @@ class Account(models.Model):
         return YunpianClient(self.apikey)
 
 
-@python_2_unicode_compatible
 class Sign(models.Model):
     """签名"""
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
@@ -36,7 +31,6 @@ class Sign(models.Model):
         return "Sign: {}".format(self.name)
 
 
-@python_2_unicode_compatible
 class Template(models.Model):
     """短信模板"""
     TYPE_CHOICE = (
@@ -54,7 +48,6 @@ class Template(models.Model):
         return "{}模板: {}".format(self.id, self.content)
 
 
-@python_2_unicode_compatible
 class Message(models.Model):
     """发送的短信记录"""
     STATUS_CHOICE = (
